@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Untitled Document</title>
+
+<style>
+body{
+    background: #666;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+}
+.bg{
+    background: #000 url(img/mobile/bg.JPG);
+    background-size: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0
+    bottom:0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+}
+.drops ul{
+    position: relative;
+    z-index: 1000;
+
+}
+.drops li{
+    position: absolute;
+    z-index: 100000;
+    display: block;
+    height: 25px;
+    background: rgba(255,255,255,.03) -webkit-radial-gradient(center 75%, ellipse contain, #ffffff, rgba(255,255,255,0) 60%);
+    margin: 20px auto;
+    border-radius: 50%;
+    box-shadow: inset 0 0px 6px rgba(0,0,0,.5), inset 0 -1px 6px rgba(0,0,0,.6),  inset 0 8px 3px rgba(0,0,0,.3), inset 0 10px 3px rgba(255,255,255,.1), 0 3px 6px rgba(0,0,0,.5);
+}
+}
+
+</style>
+
+</head>
+
+<body>
+
+	<div class="bg">
+    	<div class="drops">
+        	<ul>
+            </ul>
+        </div>
+    </div>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>    
+<script src="http://ricostacruz.com/jquery.transit/jquery.transit.min.js"></script>   
+<script>
+$(function(){
+	ndrops = 500;
+	addDrops();
+	moveDrops()
+	
+})
+function addDrops(){
+	wW = $(window).width();
+	WH = $(window).height();
+	for(i=0; i<=ndrops; i++){
+		dp = "<li class='d" + i + "''></li>"
+		dX =  Math.floor((Math.random()*wW)+1) + "px";
+		dY =  Math.floor((Math.random()*WH)+1) + "px";
+		dS = Math.floor((Math.random()*1)+1) * 0.3;
+		dB = (Math.floor((Math.random()*2)+1) * 0.5)+ "px";
+		dO = (Math.floor((Math.random()*2)+1) * 0.5);
+		dW = "25px" //Math.floor((Math.random()*30)+30) + "px";
+		dH = Math.floor((Math.random()*20)+18) + "px";
+		//goingDown = ".d" + Math.floor((Math.random()*100)+50);
+		$("ul").append(dp);
+		$(".d" + i).css("opacity",dO).css("width",dW).css("height",dH).css({x: dX, y:dY, scale: dS});
+	}
+	xxx = setInterval(function(){
+		moveDrops();	
+	},90000);
+	
+}
+function moveDrops(){
+	for(i=0; i<=ndrops; i++){
+		goingDown = ".d" + Math.floor((Math.random()*100)+1);
+		$(goingDown).addClass("move").transition({y:"+=" + Math.floor((Math.random()*40)+1) + "px"},Math.floor((Math.random()*1000)+800), "ease");
+	};
+	/*$("ul li").each(function(i){
+		dO = (Math.floor((Math.random()*2)+1) * 0.5);
+		$(this).transition({opacity: dO, delay:(i*10)},50);
+	})*/
+	
+}
+//.css("-webkit-filter","blur(" + dB +")")
+
+</script>  
+
+
+</body>
+</html>
