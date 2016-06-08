@@ -285,7 +285,6 @@ function sharing() {
 }
 
 
-<<<<<<< HEAD
 function getLocation() {
 var apiGeolocationSuccess = function(position) {
     //alert("API geolocation success!\n\nlat = " + position.coords.latitude + "\nlng = " + position.coords.longitude);
