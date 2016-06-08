@@ -1,6 +1,11 @@
 var vidEnabled = false
 var mobile = true
 var audioElement = document.createElement('audio');
+var latlng = "57.70887, 11.974559999999997"
+var x = document.getElementById("demo");
+var weather
+var period = "0"
+var adress
 
 
 
@@ -280,6 +285,224 @@ function sharing() {
 }
 
 
+<<<<<<< HEAD
+function getLocation() {
+var apiGeolocationSuccess = function(position) {
+    //alert("API geolocation success!\n\nlat = " + position.coords.latitude + "\nlng = " + position.coords.longitude);
+    latlng = position.coords.latitude +','+position.coords.longitude
+    showPosition()
+};
+
+var tryAPIGeolocation = function() {
+    console.log('tryAPIGeolocation')
+    jQuery.post( "https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyDCa1LUe1vOczX1hO_iGYgyo8p_jYuGOPU", function(success) {
+        apiGeolocationSuccess({coords: {latitude: success.location.lat, longitude: success.location.lng}});
+  })
+  .fail(function(err) {
+    //alert("API Geolocation error! \n\n"+err);
+    console.log('function err')
+  });
+};
+
+var browserGeolocationSuccess = function(position) {
+    console.log('browser success')
+    //alert("Browser geolocation success!\n\nlat = " + position.coords.latitude + "\nlng = " + position.coords.longitude);
+    latlng = position.coords.latitude +','+position.coords.longitude
+    showPosition()
+};
+
+var browserGeolocationFail = function(error) {
+    console.log('browser fail: ' + error)
+  switch (error.code) {
+    case error.TIMEOUT:
+    console.log('browser fail timeout')
+    switchToManual()
+      break;
+    case error.PERMISSION_DENIED:
+    console.log('browser fail permission denied: ' + error.message)
+    switchToManual()
+      if(error.message.indexOf("Only secure origins are allowed") == 0) {
+        tryAPIGeolocation();
+      }
+      break;
+    case error.POSITION_UNAVAILABLE:
+        console.log('browser fail position unavailable')
+        switchToManual()
+      break;
+  }
+};
+
+var tryGeolocation = function() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+        browserGeolocationSuccess,
+      browserGeolocationFail,
+      {maximumAge: 50000, timeout: 20000, enableHighAccuracy: true});
+  }
+};
+
+tryGeolocation();
+}
+
+function showPosition(position) {
+    
+    //latlng = position.coords.latitude +','+position.coords.longitude
+    $.ajax({
+        url: 'http://maps.googleapis.com/maps/api/geocode/json?latlng=' + latlng,
+        type: 'GET',
+        data: {
+            format: 'json'
+        },
+    error: function(data) {
+      console.log('geo locate error: ' + JSON.stringify(data))
+        },
+    dataType: 'json',
+    success: function(data) {
+        for(var i=0;i<data.results.length;i++) {
+        adress = data.results[2].formatted_address;
+        console.log('adress ' + adress)
+    }
+        //console.log('geo success: ' + adress)
+        //$('#geo_result').prepend('<p>'+ adress + '</p>').fadeIn()
+
+        },
+    });
+    
+    //$('#location_search').css('display', 'block')
+    
+    console.log(latlng)
+    getWeather()
+    manualLocation()
+}
+
+function switchToManual(){
+    console.log('switching to manual')
+    $('#location_search').css('display', 'block')
+    $('#loader').fadeOut(function(){
+        $('#location').fadeIn()
+        manualLocation()
+  })
+
+
+}
+
+
+function manualLocation(){
+    //$('#location_search').css('display', 'block')
+    console.log('manual')
+    $("#geocomplete").geocomplete()
+          .bind("geocode:result", function(event, result){
+            
+
+            console.log('Geo Result : ' + JSON.stringify(result.formatted_address))
+            adress = result.formatted_address
+
+            latlng = result.geometry.location
+            latlng = latlng.toString()
+            latlng = latlng.replace(/[{()}]/g, '');
+            getWeather()
+          })
+          .bind("geocode:error", function(event, status){
+            console.log("ERROR: " + status);
+          })
+          .bind("geocode:multiple", function(event, results){
+            console.log("Multiple: " + results.length + " results found");
+          });
+        
+        $("#find").click(function(){
+          $("#geocomplete").trigger("geocode");
+        });
+        
+
+    
+}
+
+function getWeather(){
+
+    $.ajax({
+   url: 'https://api.forecast.io/forecast/692a2d1bfaf4f14187d4106cd381bd45/'+latlng+'/?units=si&exclude=daily,alerts,flags',
+   type: 'GET',
+   data: {
+      format: 'json'
+   },
+   error: function() {
+      console.log('get weather error')
+   },
+   dataType: 'jsonp',
+   success: function(data) {
+      console.log('weather success: ' + JSON.stringify(data))
+      weather = data
+      weatherFilter()
+      $('#loader').fadeOut(function(){
+      $('#forecast').fadeIn()
+      $('#location').fadeIn()
+
+      $('#location_search').fadeOut(
+        function(){
+            $('#location_change').fadeIn()
+            manualLocation()
+        })
+  })
+   },
+});
+
+
+    
+}
+
+function weatherFilter(){
+    $('#amount').html('Now');
+    displayWeather()
+     $( "#slider" ).slider({
+      value:1,
+      min: 1,
+      max: 48,
+      step: 1,
+      slide: function( event, ui ) {
+        $( "#amount" ).html( ui.value + ' hours from now');
+        console.log('period' + ui.value) 
+        period = ui.value
+        displayWeather()
+      },
+
+    });
+    
+     $( "#amount" ).html(' 1 hour from now');
+}
+
+function displayWeather(){
+
+    percent = weather.hourly.data[period].precipProbability*100
+    percent = Math.round(percent)
+    summary = weather.hourly.data[period].summary
+    //console.log('prediction: ' + percent)
+    //console.log('summary' + summary)
+    if (summary === "Drizzle" ||
+        summary === "Light Rain"){
+        type=summary
+    }
+    else{
+
+        type="rain"
+    }
+
+    $('#prec_percent').html(percent+'%');
+    $('#prec_type').html(type);
+    $('#adress').html(adress);
+
+}
+
+function changeLocation(){
+    
+    $('#location_change').fadeOut(
+        function(){
+            $('#location_search').fadeIn()
+            manualLocation()
+        }
+        )
+
+}
+
 
 
 $(document).ready(function() {
@@ -287,4 +510,6 @@ $(document).ready(function() {
     screenDetect()
     audioControl()
     sharing()
+    getLocation()
+
 });
