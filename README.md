@@ -2,12 +2,24 @@
 
 ## Synopsis
 
-Full screen looping rain video with mobile degradation. This is a fiddle to implement HTML5 Video and Audio with some nice UI. Also, it's a bit nice to just sit back and watch it. 
+A simple page that gives you the percentage probability of rain in the users' or any given location. It's designed with a 
+full screen looping rain video with mobile degradation. This is a fiddle to implement HTML5 Video and Audio with some nice UI. Also, it's a bit nice to just sit back and watch it. 
 [See the live site here](https://www.projectraindance.com)
 
 ## Code
 
-This project uses three useful things.
+This project uses several useful things.
+
+* [The Dark Sky Forecast] (https://developer.forecast.io/)
+A rather nice forecast api that returns easy to search JSON. Implementation needs latitude and longitude. Example: 
+ ```javascript
+    https://api.forecast.io/forecast/[API Key]/51.5073509,-0.12775829999998223'
+ ```
+*[Geocomplete](https://ubilabs.github.io/geocomplete/)
+An advanced jQuery plugin that wraps the Google Maps API's Geocoding and Places Autocomplete services. 
+
+* Google Location APIs. 
+I actually had a problem with this, due to the fact that since Chrome 50, the geolocation API will no longer work for insecure origins. Since I didn't want to have to set up HTTPS on a project site, I had to find a workaround. This is the ``` getLocation() ```function in main-dev/main.js
 
 * [Video JS](http://videojs.com/)
 A handy framework for handling HTML5 video.
